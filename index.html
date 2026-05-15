@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Altersvorsorge-Depot vs. ETF-Sparplan - Vergleich 2026</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <style>
+        :root { --primary: #1a73e8; --secondary: #34a853; --warning: #f9ab00; --danger: #ea4335; --bg: #f8f9fa; --card: #fff; --text: #202124; --muted: #5f6368; --border: #dadce0; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; padding: 1.5rem; }
+        .container { max-width: 1440px; margin: 0 auto; }
+        h1 { text-align: center; font-size: 1.8rem; margin-bottom: 0.3rem; }
+        .subtitle { text-align: center; color: var(--muted); margin-bottom: 1.5rem; font-size: 0.9rem; }
+        .grid { display: grid; grid-template-columns: 400px 1fr; gap: 1.5rem; }
+        @media (max-width: 1100px) { .grid { grid-template-columns: 1fr; } }
+        .card { background: var(--card); border-radius: 12px; padding: 1.2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.08); border: 1px solid var(--border); margin-bottom: 0.8rem; }
+        .card h2 { font-size: 0.95rem; margin-bottom: 0.8rem; padding-bottom: 0.4rem; border-bottom: 2px solid var(--primary); }
+        .slider-group { margin-bottom: 0.9rem; }
+        .slider-group label { display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 500; margin-bottom: 0.2rem; }
+        .slider-group label span { color: var(--primary); font-weight: 700; }
+        input[type="range"] { width: 100%; height: 5px; border-radius: 3px; -webkit-appearance: none; appearance: none; background: var(--border); outline: none; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--primary); cursor: pointer; }
+        .checkbox-group { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-bottom: 0.8rem; }
+        .checkbox-group label { font-size: 0.8rem; display: flex; align-items: center; gap: 0.3rem; cursor: pointer; }
+        .checkbox-group input[type="checkbox"] { width: 15px; height: 15px; accent-color: var(--primary); }
+        select { width: 100%; padding: 0.4rem; border: 1px solid var(--border); border-radius: 6px; font-size: 0.82rem; margin-bottom: 0.8rem; background: var(--card); }
+        .tax-info { background: #e8f0fe; border-radius: 6px; padding: 0.5rem 0.7rem; font-size: 0.78rem; color: #1a56c4; margin-top: 0.4rem; line-height: 1.5; }
+        .persona-buttons { display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
+        .persona-btn { padding: 0.4rem 0.8rem; border: 1px solid var(--border); border-radius: 6px; background: var(--card); cursor: pointer; font-size: 0.78rem; transition: all 0.2s; }
+        .persona-btn:hover { border-color: var(--primary); background: #e8f0fe; }
+        .persona-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .results-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-bottom: 1.2rem; }
+        .result-card { padding: 0.8rem; border-radius: 8px; text-align: center; }
+        .result-card.avd { background: linear-gradient(135deg, #e8f0fe, #d2e3fc); border: 1px solid #aecbfa; }
+        .result-card.etf { background: linear-gradient(135deg, #e6f4ea, #ceead6); border: 1px solid #a8dab5; }
+        .result-card h3 { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.2rem; color: var(--muted); }
+        .result-card .amount { font-size: 1.4rem; font-weight: 700; }
+        .result-card.avd .amount { color: var(--primary); }
+        .result-card.etf .amount { color: var(--secondary); }
+        .result-card .detail { font-size: 0.72rem; color: var(--muted); margin-top: 0.15rem; }
+        .winner-badge { display: inline-block; padding: 0.4rem 1rem; border-radius: 20px; font-weight: 600; font-size: 0.85rem; margin-bottom: 1rem; text-align: center; }
+        .winner-badge.avd-wins { background: #d2e3fc; color: #1a56c4; }
+        .winner-badge.etf-wins { background: #ceead6; color: #1e8e3e; }
+        .winner-badge.tie { background: #fef7e0; color: #b06000; }
+        .chart-container { position: relative; height: 320px; margin-bottom: 1.2rem; }
+        .breakdown-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
+        .breakdown-table th, .breakdown-table td { padding: 0.4rem 0.6rem; text-align: right; border-bottom: 1px solid var(--border); }
+        .breakdown-table th { text-align: left; font-weight: 600; background: var(--bg); }
+        .breakdown-table td:first-child, .breakdown-table th:first-child { text-align: left; }
+        .breakdown-table tr:last-child { font-weight: 700; }
+        .info-box { background: #fef7e0; border: 1px solid #f9ab00; border-radius: 8px; padding: 0.8rem; font-size: 0.78rem; margin-top: 0.8rem; }
+        .info-box h4 { color: #b06000; margin-bottom: 0.2rem; font-size: 0.82rem; }
+        .section-title { font-size: 0.95rem; font-weight: 600; margin: 1.2rem 0 0.6rem; }
+        .payout-toggle { display: flex; gap: 0.4rem; margin-bottom: 0.8rem; }
+        .payout-toggle button { padding: 0.3rem 0.8rem; border: 1px solid var(--border); border-radius: 6px; background: var(--card); cursor: pointer; font-size: 0.82rem; transition: all 0.2s; }
+        .payout-toggle button.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .footnotes { margin-top: 1.5rem; padding-top: 0.8rem; border-top: 1px solid var(--border); font-size: 0.72rem; color: var(--muted); }
+        .footnotes h4 { margin-bottom: 0.4rem; color: var(--text); font-size: 0.8rem; }
+        .footnotes ul { padding-left: 1rem; }
+        .footnotes li { margin-bottom: 0.2rem; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Altersvorsorge-Depot vs. ETF-Sparplan</h1>
+    <p class="subtitle">Vergleich nach dem pAltvDepG (Bundesrat 08.05.2026, in Kraft 01.01.2027) &mdash; Alle Angaben ohne Gew&auml;hr</p>
+
+    <div class="grid">
+        <div>
+            <!-- Personas -->
+            <div class="card">
+                <h2>Beispiel-Szenarien</h2>
+                <div class="persona-buttons">
+                    <button class="persona-btn" onclick="loadPersona('low')">Geringverdiener<br><small>26k, 2 Kinder</small></button>
+                    <button class="persona-btn" onclick="loadPersona('avg')">Durchschnitt<br><small>44k, ledig</small></button>
+                    <button class="persona-btn" onclick="loadPersona('high')">Gutverdiener<br><small>110k, verheiratet</small></button>
+                </div>
+            </div>
+
+            <!-- Sparplan -->
+            <div class="card">
+                <h2>Sparplan</h2>
+                <div class="slider-group">
+                    <label>Monatliche Sparrate <span id="v-rate">150 &euro;</span></label>
+                    <input type="range" id="rate" min="10" max="570" step="10" value="150">
+                </div>
+                <div class="slider-group">
+                    <label>Anlagedauer <span id="v-years">30 Jahre</span></label>
+                    <input type="range" id="years" min="10" max="45" step="1" value="30">
+                </div>
+                <div class="slider-group">
+                    <label>Erwartete Rendite (p.a.) <span id="v-return">7.0%</span></label>
+                    <input type="range" id="annualReturn" min="3" max="12" step="0.5" value="7">
+                </div>
+                <div class="slider-group">
+                    <label>TER (ETF-Kosten p.a.) <span id="v-ter">0.20%</span></label>
+                    <input type="range" id="ter" min="0" max="0.8" step="0.05" value="0.2">
+                </div>
+                <div class="slider-group">
+                    <label>Auszahlungsdauer <span id="v-payout">20 Jahre</span></label>
+                    <input type="range" id="payoutYears" min="10" max="30" step="1" value="20">
+                </div>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" id="soli" checked> Soli (5,5%)</label>
+                    <label><input type="checkbox" id="kirchensteuer"> Kirchensteuer (9%)</label>
+                </div>
+            </div>
+
+            <!-- Working phase -->
+            <div class="card">
+                <h2>Erwerbsphase &mdash; Einkommen</h2>
+                <label style="font-size:0.8rem; font-weight:500; display:block; margin-bottom:0.2rem;">Steuerklasse</label>
+                <select id="steuerklasse">
+                    <option value="1">Klasse 1 &mdash; Ledig</option>
+                    <option value="2">Klasse 2 &mdash; Alleinerziehend</option>
+                    <option value="3">Klasse 3 &mdash; Verheiratet (Hauptverdiener)</option>
+                    <option value="4">Klasse 4 &mdash; Verheiratet (gleich)</option>
+                    <option value="5">Klasse 5 &mdash; Verheiratet (Geringverdiener)</option>
+                    <option value="6">Klasse 6 &mdash; Zweitjob</option>
+                </select>
+                <div class="slider-group">
+                    <label>Brutto-Jahresgehalt <span id="v-brutto">26.000 &euro;</span></label>
+                    <input type="range" id="brutto" min="15000" max="200000" step="1000" value="26000">
+                </div>
+                <div class="slider-group hidden" id="partner-income-group">
+                    <label>Partner-Einkommen <span id="v-partner">30.000 &euro;</span></label>
+                    <input type="range" id="partnerBrutto" min="0" max="200000" step="1000" value="30000">
+                </div>
+                <div class="tax-info" id="working-tax-info"></div>
+            </div>
+
+            <!-- Retirement phase -->
+            <div class="card">
+                <h2>Rentenphase &mdash; Eink&uuml;nfte</h2>
+                <div class="checkbox-group" id="splitting-group">
+                    <label><input type="checkbox" id="splittingRente" checked> Ehegattensplitting</label>
+                </div>
+                <div class="slider-group">
+                    <label>Gesetzliche Rente <span id="v-ges-rente">900 &euro;/Mo</span></label>
+                    <input type="range" id="gesRente" min="0" max="4000" step="50" value="900">
+                </div>
+                <div class="slider-group">
+                    <label>Betriebsrente <span id="v-betr-rente">0 &euro;/Mo</span></label>
+                    <input type="range" id="betrRente" min="0" max="3000" step="50" value="0">
+                </div>
+                <div class="slider-group">
+                    <label>Mieteinnahmen <span id="v-miete">0 &euro;/Mo</span></label>
+                    <input type="range" id="miete" min="0" max="5000" step="50" value="0">
+                </div>
+                <div class="slider-group">
+                    <label>Sonstige Eink&uuml;nfte <span id="v-sonstige">0 &euro;/Mo</span></label>
+                    <input type="range" id="sonstige" min="0" max="3000" step="50" value="0">
+                </div>
+                <div class="tax-info" id="retirement-tax-info"></div>
+            </div>
+
+            <!-- Zulagen -->
+            <div class="card">
+                <h2>Staatliche F&ouml;rderung (AVD)</h2>
+                <div class="slider-group">
+                    <label>Kinder (Kinderzulage 300&euro;/J) <span id="v-kinder">2</span></label>
+                    <input type="range" id="kinder" min="0" max="5" step="1" value="2">
+                </div>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" id="berufseinsteigerbonus"> Berufseinsteigerbonus (200&euro; einmalig, &lt;25J)</label>
+                    <label><input type="checkbox" id="lowIncomeBonus" checked> Geringverdiener-Bonus (175&euro;/J, &lt;26.250&euro;)</label>
+                </div>
+                <div id="zulagen-summary" style="font-size:0.78rem; color:var(--muted); margin-top:0.3rem;"></div>
+            </div>
+
+            <!-- Payout mode -->
+            <div class="card">
+                <h2>Auszahlungsmodus</h2>
+                <div class="payout-toggle">
+                    <button id="btn-monthly" class="active" onclick="setPayoutMode('monthly')">Monatliche Rente</button>
+                    <button id="btn-lump" onclick="setPayoutMode('lump')">Einmalzahlung (30%)</button>
+                </div>
+                <div id="payout-info" style="font-size:0.78rem; color:var(--muted);"></div>
+            </div>
+
+            <div class="info-box">
+                <h4>Altersvorsorge-Depot (pAltvDepG)</h4>
+                <ul style="padding-left:0.8rem; margin-top:0.2rem;">
+                    <li>Max. gef&ouml;rdert: 1.800&euro;/J | Max. gesamt: 6.840&euro;/Vertrag/J</li>
+                    <li>Grundzulage: 50% auf erste 360&euro; + 25% auf 360-1.800&euro; = max 540&euro;/J</li>
+                    <li>Kinderzulage: 300&euro;/Kind/J | Geringverdiener: 175&euro;/J</li>
+                    <li>G&uuml;nstigerpr&uuml;fung: Sonderausgabenabzug vs. Zulage (h&ouml;herer Betrag gilt)</li>
+                    <li>Gef&ouml;rderter Teil: volle nachgelagerte Besteuerung</li>
+                    <li>Ungef&ouml;rderter Teil (1.800-6.840&euro;): Halbek&uuml;nfteverfahren (50% Gewinn versteuert)</li>
+                    <li>Ertr&auml;ge in Ansparphase: komplett steuerfrei</li>
+                    <li>Auszahlung ab 65 | Mindestbeitrag: 120&euro;/J</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Right: Results -->
+        <div>
+            <div class="card">
+                <div id="winner" class="winner-badge" style="width:100%; text-align:center;"></div>
+                <div class="results-grid">
+                    <div class="result-card avd">
+                        <h3>Altersvorsorge-Depot</h3>
+                        <div class="amount" id="res-avd-total">-</div>
+                        <div class="detail" id="res-avd-detail"></div>
+                    </div>
+                    <div class="result-card etf">
+                        <h3>ETF-Sparplan</h3>
+                        <div class="amount" id="res-etf-total">-</div>
+                        <div class="detail" id="res-etf-detail"></div>
+                    </div>
+                    <div class="result-card avd">
+                        <h3>AVD Monatl. Netto-Rente</h3>
+                        <div class="amount" id="res-avd-monthly">-</div>
+                        <div class="detail" id="res-avd-monthly-detail"></div>
+                    </div>
+                    <div class="result-card etf">
+                        <h3>ETF Monatl. Netto-Rente</h3>
+                        <div class="amount" id="res-etf-monthly">-</div>
+                        <div class="detail" id="res-etf-monthly-detail"></div>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="mainChart"></canvas>
+                </div>
+
+                <h3 class="section-title">Detailrechnung</h3>
+                <table class="breakdown-table">
+                    <thead><tr><th></th><th>Altersvorsorge-Depot</th><th>ETF-Sparplan</th></tr></thead>
+                    <tbody id="breakdown-body"></tbody>
+                </table>
+
+                <h3 class="section-title" style="margin-top:1.2rem;">Verm&ouml;gensentwicklung</h3>
+                <div class="chart-container" style="height:260px;">
+                    <canvas id="growthChart"></canvas>
+                </div>
+            </div>
+
+            <div class="footnotes">
+                <h4>Berechnungsgrundlagen</h4>
+                <ul>
+                    <li><b>EStG &sect;32a (2025):</b> Grundfreibetrag 12.096&euro;, Progressionszonen, Spitzensteuersatz 42%, Reichensteuer 45%.</li>
+                    <li><b>Sozialversicherung:</b> RV 9,3% (BBG 96.600&euro;), KV 8,55% (BBG 66.150&euro;), PV 1,8-2,4% (kinderabhängig). Abzug als Vorsorgeaufwendungen (&sect;10 EStG).</li>
+                    <li><b>AVD F&ouml;rderung:</b> Grundzulage max 540&euro;/J (50% auf 360&euro; + 25% auf 1.440&euro;). G&uuml;nstigerpr&uuml;fung automatisch.</li>
+                    <li><b>AVD Auszahlung:</b> Gef&ouml;rderter Anteil voll versteuert (&sect;22 Nr. 5 EStG). Ungef&ouml;rderter Anteil: Halbek&uuml;nfteverfahren (50% der Gewinne versteuert bei 12+ Jahren Haltedauer).</li>
+                    <li><b>ETF:</b> Vorabpauschale (Basiszins 2,53%, &times;0,7, 30% Teilfreistellung). Abgeltungssteuer 25%+Soli+KiSt auf 70% der Gewinne (&sect;32d Abs. 1 EStG). Sparerpauschbetrag 1.000/2.000&euro;.</li>
+                    <li><b>Ges. Rente:</b> Besteuerungsanteil 100% (Rentenbeginn ab 2040).</li>
+                    <li><b>Splitting:</b> F&uuml;r Klasse 3/5 und verheiratete Rentner.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let payoutMode = 'monthly';
+let mainChart, growthChart;
+
+const BASISZINS = 0.0253;
+const SPARERPAUSCHBETRAG = 1000;
+const TEILFREISTELLUNG = 0.30;
+const ABGELTUNGSSTEUER = 0.25;
+const GRUNDFREIBETRAG = 12348;
+const ENTLASTUNGSBETRAG = 4260;
+const BBG_RV = 96600;
+const BBG_KV = 66150;
+// AVD limits (pAltvDepG final)
+const AVD_MAX_SUBSIDIZED = 1800;
+const AVD_MAX_TOTAL = 6840;
+
+// === TAX ENGINE (EStG §32a, 2025/2026) ===
+function calcIncomeTax(zvE) {
+    if (zvE <= 0) return 0;
+    if (zvE <= 12348) return 0;
+    if (zvE <= 17799) { const y = (zvE - 12348) / 10000; return (914.51 * y + 1400) * y; }
+    if (zvE <= 69878) { const z = (zvE - 17799) / 10000; return (173.10 * z + 2397) * z + 1034.87; }
+    if (zvE <= 277825) return 0.42 * zvE - 11135.63;
+    return 0.45 * zvE - 19470.38;
+}
+
+function calcMarginalRate(zvE) {
+    if (zvE <= 12348) return 0;
+    if (zvE <= 17799) { const y = (zvE - 12348) / 10000; return (2 * 914.51 * y + 1400) / 10000; }
+    if (zvE <= 69878) { const z = (zvE - 17799) / 10000; return (2 * 173.10 * z + 2397) / 10000; }
+    if (zvE <= 277825) return 0.42;
+    return 0.45;
+}
+
+function calcSoli(est, splitting = false) {
+    const freigrenze = splitting ? 36260 : 18130;
+    if (est <= freigrenze) return 0;
+    return Math.min(est * 0.055, (est - freigrenze) * 0.119);
+}
+
+function calcFullTax(est, soli, kirche, splitting = false) {
+    let total = est;
+    if (soli) total += calcSoli(est, splitting);
+    if (kirche) total += est * 0.09;
+    return total;
+}
+
+// Sozialversicherung (abzugsfähige Vorsorgeaufwendungen)
+function calcSVAbzug(brutto) {
+    const rv = Math.min(brutto, BBG_RV) * 0.093;
+    const kv = Math.min(brutto, BBG_KV) * 0.0855;
+    const kinder = +document.getElementById('kinder').value;
+    let pvRate = kinder === 0 ? 0.024 : kinder === 1 ? 0.018 : Math.max(0.008, 0.018 - (kinder - 1) * 0.0025);
+    const pv = Math.min(brutto, BBG_KV) * pvRate;
+    return rv + kv + pv;
+}
+
+function calcZvE(brutto, klasse, partnerBrutto) {
+    if (klasse === 6) return Math.max(0, brutto); // no deductions
+    const werbungskosten = 1230;
+    const sonderausgaben = 36;
+    const sv = calcSVAbzug(brutto);
+    let zvE = brutto - werbungskosten - sonderausgaben - sv;
+    if (klasse === 2) {
+        const kinder = +document.getElementById('kinder').value;
+        zvE -= ENTLASTUNGSBETRAG + Math.max(0, kinder - 1) * 240;
+    }
+    return Math.max(0, zvE);
+}
+
+function calcWorkingMarginalRate(brutto, klasse, partnerBrutto, soli, kirche) {
+    const zvE = calcZvE(brutto, klasse, partnerBrutto);
+    let marginal;
+    if (klasse === 3 || klasse === 5) {
+        const partnerZvE = calcZvE(partnerBrutto, klasse === 3 ? 5 : 3, brutto);
+        marginal = calcMarginalRate((zvE + partnerZvE) / 2);
+    } else {
+        marginal = calcMarginalRate(zvE);
+    }
+    let total = marginal;
+    if (soli) total += marginal * 0.055;
+    if (kirche) total += marginal * 0.09;
+    return total;
+}
+
+function calcWorkingEffectiveRate(brutto, klasse, partnerBrutto, soli, kirche) {
+    const zvE = calcZvE(brutto, klasse, partnerBrutto);
+    let est;
+    const isSplitting = klasse === 3 || klasse === 5;
+    if (isSplitting) {
+        const partnerZvE = calcZvE(partnerBrutto, klasse === 3 ? 5 : 3, brutto);
+        est = calcIncomeTax((zvE + partnerZvE) / 2) * 2;
+        const share = (zvE + partnerZvE) > 0 ? zvE / (zvE + partnerZvE) : 0.5;
+        est = est * share;
+    } else {
+        est = calcIncomeTax(zvE);
+    }
+    const full = calcFullTax(est, soli, kirche, isSplitting);
+    return brutto > 0 ? full / brutto : 0;
+}
+
+// Retirement tax: progressive on total income, marginal attribution to AVD
+function calcRetirementTax(avdAnnualPayout, gesRente, betrRente, miete, sonstigeIncome, splitting, soli, kirche) {
+    const totalIncome = avdAnnualPayout + gesRente * 12 + betrRente * 12 + miete * 12 + sonstigeIncome * 12;
+    const zvE = Math.max(0, totalIncome - 102); // Werbungskosten-Pauschbetrag Rentner
+    let est = splitting ? calcIncomeTax(zvE / 2) * 2 : calcIncomeTax(zvE);
+    const fullTax = calcFullTax(est, soli, kirche, splitting);
+    const effectiveRate = totalIncome > 0 ? fullTax / totalIncome : 0;
+
+    // Marginal tax on AVD portion
+    const incomeWithoutAVD = totalIncome - avdAnnualPayout;
+    const zvEWithout = Math.max(0, incomeWithoutAVD - 102);
+    let estWithout = splitting ? calcIncomeTax(zvEWithout / 2) * 2 : calcIncomeTax(zvEWithout);
+    const taxWithout = calcFullTax(estWithout, soli, kirche, splitting);
+    const taxOnAVD = fullTax - taxWithout;
+    const avdEffectiveRate = avdAnnualPayout > 0 ? taxOnAVD / avdAnnualPayout : 0;
+
+    return { effectiveRate, avdEffectiveRate, totalTax: fullTax, taxOnAVD, totalIncome };
+}
+
+function abgeltungssteuerEffective(soli, kirche) {
+    const kircheSatz = kirche ? 0.09 : 0;
+    const kapest = ABGELTUNGSSTEUER / (1 + kircheSatz);
+    let r = kapest;
+    if (soli) r += kapest * 0.055;
+    if (kirche) r += kapest * kircheSatz;
+    return r;
+}
+
+function fmt(n) { return n.toLocaleString('de-DE', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + ' €'; }
+
+// === AVD ZULAGEN ===
+function calcZulagen(annualContrib, kinder, lowIncome, brutto) {
+    const subsidized = Math.min(annualContrib, AVD_MAX_SUBSIDIZED);
+    // Kinderzulage: 1:1 match on 300€/child, requires actual contribution, within 1800€ cap
+    const maxKinderContrib = Math.min(kinder * 300, subsidized);
+    const kinderzulage = maxKinderContrib;
+    // Grundzulage: 50% on first 360€ + 25% on rest (applied to remaining subsidized after Kinder)
+    const grundzulageBasis = subsidized;
+    const tier1 = Math.min(grundzulageBasis, 360);
+    const tier2 = Math.max(0, grundzulageBasis - 360);
+    const grundzulage = tier1 * 0.5 + tier2 * 0.25;
+    const lowIncomeBonus = (lowIncome && brutto < 26250) ? 175 : 0;
+    return { grundzulage, kinderzulage, lowIncomeBonus, total: grundzulage + kinderzulage + lowIncomeBonus };
+}
+
+// Günstigerprüfung: is Sonderausgabenabzug better than Zulagen?
+function calcGuenstigerpruefung(annualContrib, zulagenTotal, marginalRate) {
+    const subsidized = Math.min(annualContrib, AVD_MAX_SUBSIDIZED);
+    const sonderausgabenBenefit = (subsidized + zulagenTotal) * marginalRate;
+    // You get the HIGHER of: Zulagen alone, or Sonderausgabenabzug (and Zulagen stay in depot either way)
+    // The extra tax refund = max(0, Sonderausgabenabzug - Zulagen)
+    const extraRefund = Math.max(0, sonderausgabenBenefit - zulagenTotal);
+    return { sonderausgabenBenefit, extraRefund, zulagenWins: extraRefund === 0 };
+}
+
+function getParams() {
+    return {
+        rate: +document.getElementById('rate').value,
+        years: +document.getElementById('years').value,
+        annualReturn: +document.getElementById('annualReturn').value / 100,
+        ter: +document.getElementById('ter').value / 100,
+        payoutYears: +document.getElementById('payoutYears').value,
+        soli: document.getElementById('soli').checked,
+        kirchensteuer: document.getElementById('kirchensteuer').checked,
+        steuerklasse: +document.getElementById('steuerklasse').value,
+        brutto: +document.getElementById('brutto').value,
+        partnerBrutto: +document.getElementById('partnerBrutto').value,
+        gesRente: +document.getElementById('gesRente').value,
+        betrRente: +document.getElementById('betrRente').value,
+        miete: +document.getElementById('miete').value,
+        sonstige: +document.getElementById('sonstige').value,
+        splittingRente: document.getElementById('splittingRente').checked,
+        kinder: +document.getElementById('kinder').value,
+        berufseinsteigerbonus: document.getElementById('berufseinsteigerbonus').checked,
+        lowIncomeBonus: document.getElementById('lowIncomeBonus').checked,
+    };
+}
+
+function calculate() {
+    const p = getParams();
+    const monthlyRate = p.rate;
+    const annualRate = monthlyRate * 12;
+    const netReturn = p.annualReturn - p.ter;
+    const monthlyReturn = netReturn / 12;
+    const years = p.years;
+    const months = years * 12;
+
+    // Working phase tax
+    const marginalRate = calcWorkingMarginalRate(p.brutto, p.steuerklasse, p.partnerBrutto, p.soli, p.kirchensteuer);
+    const effectiveWorkRate = calcWorkingEffectiveRate(p.brutto, p.steuerklasse, p.partnerBrutto, p.soli, p.kirchensteuer);
+
+    // AVD: split into subsidized and unsubsidized
+    const annualSubsidized = Math.min(annualRate, AVD_MAX_SUBSIDIZED);
+    const annualUnsubsidized = Math.min(Math.max(0, annualRate - AVD_MAX_SUBSIDIZED), AVD_MAX_TOTAL - AVD_MAX_SUBSIDIZED);
+    const annualAVDTotal = annualSubsidized + annualUnsubsidized;
+
+    // Zulagen
+    const zulagen = calcZulagen(annualRate, p.kinder, p.lowIncomeBonus, p.brutto);
+    const gp = calcGuenstigerpruefung(annualRate, zulagen.total, marginalRate);
+    const annualZulagen = zulagen.total;
+    const annualExtraRefund = gp.extraRefund;
+
+    // Update working info
+    document.getElementById('working-tax-info').innerHTML =
+        `Grenzsteuersatz: <b>${(marginalRate*100).toFixed(1)}%</b> | Effektiv: ${(effectiveWorkRate*100).toFixed(1)}%<br>` +
+        `Zulagen: ${fmt(annualZulagen)}/J` +
+        (annualExtraRefund > 0 ? ` + ${fmt(annualExtraRefund)} Steuererstattung (Günstigerprüfung)` : ' (Zulagen vorteilhafter)');
+
+    // Zulagen summary
+    document.getElementById('zulagen-summary').innerHTML =
+        `Grundzulage: ${fmt(zulagen.grundzulage)}/J | Kinderzulage: ${fmt(zulagen.kinderzulage)}/J` +
+        (zulagen.lowIncomeBonus ? ` | Geringv.: ${fmt(zulagen.lowIncomeBonus)}/J` : '') +
+        `<br><b>Gesamt: ${fmt(annualZulagen)}/J &times; ${years}J = ${fmt(annualZulagen * years)}</b>`;
+
+    // === AVD Growth (tax-free) ===
+    let avdBalance = 0;
+    let avdContribTotal = 0;
+    let avdZulagenTotal = 0;
+    let avdSubsidizedContrib = 0;
+    let avdUnsubsidizedContrib = 0;
+    const avdGrowth = [];
+
+    for (let m = 1; m <= months; m++) {
+        const monthlyZulage = annualZulagen / 12;
+        const monthlySubsidized = annualSubsidized / 12;
+        const monthlyUnsub = annualUnsubsidized / 12;
+        let extra = 0;
+        if (m === 1 && p.berufseinsteigerbonus) extra = 200;
+
+        avdBalance = (avdBalance + monthlyRate + monthlyZulage + extra) * (1 + monthlyReturn);
+        avdContribTotal += monthlyRate;
+        avdZulagenTotal += monthlyZulage + extra;
+        avdSubsidizedContrib += monthlySubsidized + monthlyZulage + extra;
+        avdUnsubsidizedContrib += monthlyUnsub;
+        if (m % 12 === 0) avdGrowth.push(avdBalance);
+    }
+
+    // Proportion: subsidized vs unsubsidized (by contributions)
+    const totalIn = avdContribTotal + avdZulagenTotal;
+    const subsidizedRatio = totalIn > 0 ? (avdSubsidizedContrib) / totalIn : 1;
+    const unsubsidizedRatio = 1 - subsidizedRatio;
+
+    // === ETF Growth (with Vorabpauschale) ===
+    const abgSteuer = abgeltungssteuerEffective(p.soli, p.kirchensteuer);
+    const isMarried = p.steuerklasse === 3 || p.steuerklasse === 4 || p.steuerklasse === 5;
+    const spb = isMarried ? 2000 : 1000;
+    let etfBalance = 0;
+    let etfContribTotal = 0;
+    let etfTaxesPaid = 0;
+    let cumulativeVorabpauschale = 0;
+    let sparerUsed = 0;
+    const etfGrowth = [];
+    let prevYearEnd = 0;
+
+    for (let m = 1; m <= months; m++) {
+        etfBalance = (etfBalance + monthlyRate) * (1 + monthlyReturn);
+        etfContribTotal += monthlyRate;
+
+        if (m % 12 === 0) {
+            const yearGain = etfBalance - prevYearEnd - monthlyRate * 12;
+            if (yearGain > 0) {
+                const basisertrag = prevYearEnd * BASISZINS * 0.7;
+                const vorabpauschale = Math.min(basisertrag, yearGain);
+                cumulativeVorabpauschale += vorabpauschale;
+                const taxableVorab = vorabpauschale * (1 - TEILFREISTELLUNG);
+                const remainingSPB = Math.max(0, spb - sparerUsed);
+                const taxableAfterSPB = Math.max(0, taxableVorab - remainingSPB);
+                sparerUsed += Math.min(taxableVorab, remainingSPB);
+                const taxOnVorab = taxableAfterSPB * abgSteuer;
+                etfBalance -= taxOnVorab;
+                etfTaxesPaid += taxOnVorab;
+            }
+            prevYearEnd = etfBalance;
+            sparerUsed = 0;
+            etfGrowth.push(etfBalance);
+        }
+    }
+
+    // === PAYOUT PHASE ===
+    let avdAfterTax, avdMonthlyPayout, avdMonthlyNet, avdTotalGross, retirementInfo;
+
+    if (payoutMode === 'lump') {
+        // Lump sum (max 30% per law, rest as plan)
+        const lumpAmount = avdBalance * 0.30;
+        const planAmount = avdBalance * 0.70;
+
+        // Subsidized portion: full tax. Unsubsidized: Halbeinkünfte on gains (only if held 12+ years)
+        const subsidizedBalance = avdBalance * subsidizedRatio;
+        const unsubBalance = avdBalance * unsubsidizedRatio;
+        const unsubGains = Math.max(0, unsubBalance - avdUnsubsidizedContrib);
+        const halfIncomeEligible = years >= 12;
+        const unsubTaxableGains = unsubGains * (halfIncomeEligible ? 0.5 : 1.0);
+
+        const totalTaxableAnnual = subsidizedBalance + unsubTaxableGains;
+        retirementInfo = calcRetirementTax(totalTaxableAnnual, p.gesRente, p.betrRente, p.miete, p.sonstige, p.splittingRente, p.soli, p.kirchensteuer);
+        const avdTax = retirementInfo.taxOnAVD;
+        avdTotalGross = avdBalance;
+        avdAfterTax = avdBalance - avdTax;
+        avdMonthlyPayout = avdTotalGross / (p.payoutYears * 12);
+        avdMonthlyNet = avdAfterTax / (p.payoutYears * 12);
+    } else {
+        // Monthly annuity
+        const payoutMonths = p.payoutYears * 12;
+        const payoutMonthlyReturn = netReturn / 12;
+        let grossMonthly = payoutMonthlyReturn > 0
+            ? avdBalance * payoutMonthlyReturn / (1 - Math.pow(1 + payoutMonthlyReturn, -payoutMonths))
+            : avdBalance / payoutMonths;
+        avdMonthlyPayout = grossMonthly;
+        avdTotalGross = grossMonthly * payoutMonths;
+
+        // Annual payout for tax calc
+        const annualPayout = grossMonthly * 12;
+        // Split into subsidized (full tax) and unsubsidized (Halbeinkünfte on gains if 12+ years)
+        const subsidizedAnnual = annualPayout * subsidizedRatio;
+        const unsubAnnual = annualPayout * unsubsidizedRatio;
+        const unsubGainRatio = avdBalance > (avdContribTotal + avdZulagenTotal)
+            ? (avdBalance - avdContribTotal - avdZulagenTotal) / avdBalance : 0;
+        const halfIncomeEligible = years >= 12;
+        const unsubTaxableGains = unsubAnnual * unsubGainRatio * (halfIncomeEligible ? 0.5 : 1.0);
+        const taxableAVDAnnual = subsidizedAnnual + unsubTaxableGains;
+
+        retirementInfo = calcRetirementTax(taxableAVDAnnual, p.gesRente, p.betrRente, p.miete, p.sonstige, p.splittingRente, p.soli, p.kirchensteuer);
+        avdMonthlyNet = grossMonthly - (retirementInfo.taxOnAVD / 12);
+        avdAfterTax = avdMonthlyNet * payoutMonths;
+    }
+
+    // Retirement info display
+    const otherRetIncome = (p.gesRente + p.betrRente + p.miete + p.sonstige) * 12;
+    document.getElementById('retirement-tax-info').innerHTML =
+        `Sonst. Rente: ${fmt(otherRetIncome)}/J + AVD: ${fmt(avdMonthlyPayout * 12)}/J<br>` +
+        `Eff. Steuer auf AVD: <b>${(retirementInfo.avdEffectiveRate * 100).toFixed(1)}%</b>` +
+        (p.splittingRente ? ' (Splitting)' : '');
+
+    // === ETF Withdrawal ===
+    // §19 InvStG: Veräußerungsgewinn = Erlös - Anschaffungskosten - Σ Vorabpauschalen
+    const verauesserungsgewinn = Math.max(0, etfBalance - etfContribTotal - cumulativeVorabpauschale);
+    const etfTaxableGains = verauesserungsgewinn * (1 - TEILFREISTELLUNG);
+    const etfTaxableAfterSPB = Math.max(0, etfTaxableGains - spb);
+    const etfFinalTax = etfTaxableAfterSPB * abgSteuer;
+
+    let etfAfterTax, etfMonthlyPayout, etfMonthlyNet, etfTotalGross;
+    if (payoutMode === 'lump') {
+        etfTotalGross = etfBalance;
+        etfAfterTax = etfBalance - etfFinalTax;
+        etfMonthlyPayout = etfTotalGross / (p.payoutYears * 12);
+        etfMonthlyNet = etfAfterTax / (p.payoutYears * 12);
+    } else {
+        const taxRatio = etfBalance > 0 ? etfFinalTax / etfBalance : 0;
+        const effectiveBalance = etfBalance * (1 - taxRatio);
+        const payoutMonths = p.payoutYears * 12;
+        const payoutMonthlyReturn = netReturn / 12;
+        let grossMonthly = payoutMonthlyReturn > 0
+            ? effectiveBalance * payoutMonthlyReturn / (1 - Math.pow(1 + payoutMonthlyReturn, -payoutMonths))
+            : effectiveBalance / payoutMonths;
+        etfMonthlyPayout = grossMonthly;
+        etfMonthlyNet = grossMonthly;
+        etfTotalGross = grossMonthly * payoutMonths;
+        etfAfterTax = etfMonthlyNet * payoutMonths;
+    }
+
+    // === UI UPDATE ===
+    const avdTotalTax = avdTotalGross - avdAfterTax;
+    const etfTotalTax = etfTotalGross - etfAfterTax;
+    document.getElementById('res-avd-total').textContent = fmt(avdAfterTax);
+    document.getElementById('res-avd-detail').textContent = `Brutto: ${fmt(avdTotalGross)} | Steuer: ${fmt(avdTotalTax)}`;
+    document.getElementById('res-etf-total').textContent = fmt(etfAfterTax);
+    document.getElementById('res-etf-detail').textContent = `Brutto: ${fmt(etfTotalGross)} | Steuer: ${fmt(etfTotalTax)}`;
+    document.getElementById('res-avd-monthly').textContent = fmt(avdMonthlyNet) + '/Mo';
+    document.getElementById('res-avd-monthly-detail').textContent = `Brutto ${fmt(avdMonthlyPayout)}/Mo | Steuer ${(retirementInfo.avdEffectiveRate*100).toFixed(1)}%`;
+    document.getElementById('res-etf-monthly').textContent = fmt(etfMonthlyNet) + '/Mo';
+    document.getElementById('res-etf-monthly-detail').textContent = `KapESt ${(abgSteuer*100).toFixed(1)}% auf 70% Gewinn`;
+
+    const diff = avdAfterTax - etfAfterTax;
+    const winnerEl = document.getElementById('winner');
+    if (Math.abs(diff) < 100) {
+        winnerEl.className = 'winner-badge tie';
+        winnerEl.textContent = 'Nahezu gleichwertig';
+    } else if (diff > 0) {
+        winnerEl.className = 'winner-badge avd-wins';
+        winnerEl.textContent = `AVD gewinnt: +${fmt(diff)} netto (${(diff/etfAfterTax*100).toFixed(1)}% mehr)`;
+    } else {
+        winnerEl.className = 'winner-badge etf-wins';
+        winnerEl.textContent = `ETF gewinnt: +${fmt(-diff)} netto (${(-diff/avdAfterTax*100).toFixed(1)}% mehr)`;
+    }
+
+    // Breakdown
+    const tbody = document.getElementById('breakdown-body');
+    tbody.innerHTML = `
+        <tr><td>Monatliche Sparrate</td><td>${fmt(monthlyRate)}</td><td>${fmt(monthlyRate)}</td></tr>
+        <tr><td>Staatl. Zulagen/Jahr</td><td>${fmt(annualZulagen)} + ${fmt(annualExtraRefund)} Erstattung</td><td>&mdash;</td></tr>
+        <tr><td>Zulagen gesamt (${years}J)</td><td><b>${fmt(avdZulagenTotal)}</b></td><td>&mdash;</td></tr>
+        <tr><td>Gesamte Einzahlungen</td><td>${fmt(avdContribTotal + avdZulagenTotal)}</td><td>${fmt(etfContribTotal)}</td></tr>
+        <tr><td>Brutto-Endverm&ouml;gen</td><td>${fmt(avdBalance)}</td><td>${fmt(etfBalance)}</td></tr>
+        <tr><td>Rendite (Gewinn)</td><td>${fmt(avdBalance - avdContribTotal - avdZulagenTotal)}</td><td>${fmt(etfGrossGains)}</td></tr>
+        <tr><td>Steuern Ansparphase</td><td>0 &euro; (steuerfrei)</td><td>${fmt(etfTaxesPaid)} (Vorabpauschale)</td></tr>
+        <tr><td>Steuern Auszahlung</td><td>${fmt(avdTotalTax)} (${(retirementInfo.avdEffectiveRate*100).toFixed(1)}% progressiv)</td><td>${fmt(etfFinalTax)} (KapESt auf 70% Gewinn)</td></tr>
+        <tr><td><b>Netto nach Steuern</b></td><td><b>${fmt(avdAfterTax)}</b></td><td><b>${fmt(etfAfterTax)}</b></td></tr>
+    `;
+
+    const payoutInfo = document.getElementById('payout-info');
+    payoutInfo.textContent = payoutMode === 'monthly'
+        ? `Annuität über ${p.payoutYears}J, Restkapital verzinst ${(netReturn*100).toFixed(1)}% p.a.`
+        : `30% Einmalentnahme + 70% Auszahlungsplan (gesetzl. Maximum).`;
+
+    updateCharts(avdGrowth, etfGrowth, avdAfterTax, etfAfterTax, years, p);
+}
+
+function updateCharts(avdGrowth, etfGrowth, avdNet, etfNet, years, p) {
+    const labels = Array.from({length: years}, (_, i) => `J${i+1}`);
+    if (mainChart) mainChart.destroy();
+    mainChart = new Chart(document.getElementById('mainChart'), {
+        type: 'bar',
+        data: {
+            labels: ['Einzahlungen', 'Brutto', 'Steuern', 'Netto'],
+            datasets: [
+                { label: 'AVD', data: [p.rate*12*years, avdGrowth[avdGrowth.length-1]||0, (avdGrowth[avdGrowth.length-1]||0)-avdNet, avdNet], backgroundColor: 'rgba(26,115,232,0.7)', borderColor: 'rgba(26,115,232,1)', borderWidth: 1 },
+                { label: 'ETF', data: [p.rate*12*years, etfGrowth[etfGrowth.length-1]||0, (etfGrowth[etfGrowth.length-1]||0)-etfNet, etfNet], backgroundColor: 'rgba(52,168,83,0.7)', borderColor: 'rgba(52,168,83,1)', borderWidth: 1 }
+            ]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' }, tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + fmt(ctx.raw) } } }, scales: { y: { ticks: { callback: v => (v/1000).toFixed(0)+'k €' } } } }
+    });
+
+    if (growthChart) growthChart.destroy();
+    growthChart = new Chart(document.getElementById('growthChart'), {
+        type: 'line',
+        data: { labels, datasets: [
+            { label: 'AVD (steuerfrei)', data: avdGrowth, borderColor: 'rgba(26,115,232,1)', backgroundColor: 'rgba(26,115,232,0.1)', fill: true, tension: 0.3 },
+            { label: 'ETF (nach Vorabpauschale)', data: etfGrowth, borderColor: 'rgba(52,168,83,1)', backgroundColor: 'rgba(52,168,83,0.1)', fill: true, tension: 0.3 }
+        ]},
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' }, tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + fmt(ctx.raw) } } }, scales: { y: { ticks: { callback: v => (v/1000).toFixed(0)+'k €' } } } }
+    });
+}
+
+function setPayoutMode(mode) {
+    payoutMode = mode;
+    document.getElementById('btn-monthly').classList.toggle('active', mode === 'monthly');
+    document.getElementById('btn-lump').classList.toggle('active', mode === 'lump');
+    calculate();
+}
+
+// === PERSONAS ===
+function loadPersona(type) {
+    document.querySelectorAll('.persona-btn').forEach(b => b.classList.remove('active'));
+    event.target.closest('.persona-btn').classList.add('active');
+    const personas = {
+        low: { rate: 150, years: 30, brutto: 26000, steuerklasse: '2', partnerBrutto: 0, kinder: 2, gesRente: 900, betrRente: 0, miete: 0, sonstige: 0, lowIncome: true, berufseinsteiger: false, splitting: false },
+        avg: { rate: 250, years: 30, brutto: 44000, steuerklasse: '1', partnerBrutto: 0, kinder: 0, gesRente: 1500, betrRente: 0, miete: 0, sonstige: 0, lowIncome: false, berufseinsteiger: false, splitting: false },
+        high: { rate: 570, years: 30, brutto: 110000, steuerklasse: '3', partnerBrutto: 45000, kinder: 1, gesRente: 2200, betrRente: 500, miete: 0, sonstige: 0, lowIncome: false, berufseinsteiger: false, splitting: true }
+    };
+    const pr = personas[type];
+    document.getElementById('rate').value = pr.rate;
+    document.getElementById('years').value = pr.years;
+    document.getElementById('brutto').value = pr.brutto;
+    document.getElementById('steuerklasse').value = pr.steuerklasse;
+    document.getElementById('partnerBrutto').value = pr.partnerBrutto;
+    document.getElementById('kinder').value = pr.kinder;
+    document.getElementById('gesRente').value = pr.gesRente;
+    document.getElementById('betrRente').value = pr.betrRente;
+    document.getElementById('miete').value = pr.miete;
+    document.getElementById('sonstige').value = pr.sonstige;
+    document.getElementById('lowIncomeBonus').checked = pr.lowIncome;
+    document.getElementById('berufseinsteigerbonus').checked = pr.berufseinsteiger;
+    document.getElementById('splittingRente').checked = pr.splitting;
+    updateLabels();
+    calculate();
+}
+
+function updateLabels() {
+    document.getElementById('v-rate').textContent = document.getElementById('rate').value + ' €';
+    document.getElementById('v-years').textContent = document.getElementById('years').value + ' Jahre';
+    document.getElementById('v-return').textContent = (+document.getElementById('annualReturn').value).toFixed(1) + '%';
+    document.getElementById('v-ter').textContent = (+document.getElementById('ter').value).toFixed(2) + '%';
+    document.getElementById('v-payout').textContent = document.getElementById('payoutYears').value + ' Jahre';
+    document.getElementById('v-brutto').textContent = fmt(+document.getElementById('brutto').value);
+    document.getElementById('v-partner').textContent = fmt(+document.getElementById('partnerBrutto').value);
+    document.getElementById('v-ges-rente').textContent = document.getElementById('gesRente').value + ' €/Mo';
+    document.getElementById('v-betr-rente').textContent = document.getElementById('betrRente').value + ' €/Mo';
+    document.getElementById('v-miete').textContent = document.getElementById('miete').value + ' €/Mo';
+    document.getElementById('v-sonstige').textContent = document.getElementById('sonstige').value + ' €/Mo';
+    document.getElementById('v-kinder').textContent = document.getElementById('kinder').value;
+
+    const klasse = +document.getElementById('steuerklasse').value;
+    document.getElementById('partner-income-group').classList.toggle('hidden', klasse !== 3 && klasse !== 5);
+    const isMarried = [3, 4, 5].includes(klasse);
+    document.getElementById('splitting-group').style.display = isMarried ? '' : 'none';
+}
+
+document.querySelectorAll('input[type="range"], input[type="checkbox"], select').forEach(el => {
+    el.addEventListener('input', () => { updateLabels(); calculate(); });
+    el.addEventListener('change', () => { updateLabels(); calculate(); });
+});
+
+updateLabels();
+calculate();
+</script>
+</body>
+</html>
