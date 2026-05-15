@@ -272,7 +272,7 @@
             <div class="footnotes">
                 <h4>Berechnungsgrundlagen</h4>
                 <ul>
-                    <li><b>EStG &sect;32a (2025):</b> Grundfreibetrag 12.096&euro;, Progressionszonen, Spitzensteuersatz 42%, Reichensteuer 45%.</li>
+                    <li><b>EStG &sect;32a (2025/2026):</b> Grundfreibetrag 12.348&euro;, Progressionszonen, Spitzensteuersatz 42%, Reichensteuer 45%.</li>
                     <li><b>Sozialversicherung:</b> RV 9,3% (BBG 96.600&euro;), KV 8,55% (BBG 66.150&euro;), PV 1,8-2,4% (kinderabhängig). Abzug als Vorsorgeaufwendungen (&sect;10 EStG).</li>
                     <li><b>AVD F&ouml;rderung:</b> Grundzulage max 540&euro;/J (50% auf 360&euro; + 25% auf 1.440&euro;). G&uuml;nstigerpr&uuml;fung automatisch.</li>
                     <li><b>AVD Auszahlung:</b> Gef&ouml;rderter Anteil voll versteuert (&sect;22 Nr. 5 EStG). Ungef&ouml;rderter Anteil: Halbek&uuml;nfteverfahren (50% der Gewinne versteuert bei 12+ Jahren Haltedauer).</li>
@@ -679,7 +679,7 @@ function calculate() {
         <tr><td>Zulagen gesamt (${years}J)</td><td><b>${fmt(avdZulagenTotal)}</b></td><td>&mdash;</td></tr>
         <tr><td>Gesamte Einzahlungen</td><td>${fmt(avdContribTotal + avdZulagenTotal)}</td><td>${fmt(etfContribTotal)}</td></tr>
         <tr><td>Brutto-Endverm&ouml;gen</td><td>${fmt(avdBalance)}</td><td>${fmt(etfBalance)}</td></tr>
-        <tr><td>Rendite (Gewinn)</td><td>${fmt(avdBalance - avdContribTotal - avdZulagenTotal)}</td><td>${fmt(etfGrossGains)}</td></tr>
+        <tr><td>Rendite (Gewinn)</td><td>${fmt(avdBalance - avdContribTotal - avdZulagenTotal)}</td><td>${fmt(verauesserungsgewinn)}</td></tr>
         <tr><td>Steuern Ansparphase</td><td>0 &euro; (steuerfrei)</td><td>${fmt(etfTaxesPaid)} (Vorabpauschale)</td></tr>
         <tr><td>Steuern Auszahlung</td><td>${fmt(avdTotalTax)} (${(retirementInfo.avdEffectiveRate*100).toFixed(1)}% progressiv)</td><td>${fmt(etfFinalTax)} (KapESt auf 70% Gewinn)</td></tr>
         <tr><td><b>Netto nach Steuern</b></td><td><b>${fmt(avdAfterTax)}</b></td><td><b>${fmt(etfAfterTax)}</b></td></tr>
